@@ -4,10 +4,10 @@ using Int32 = System.Int32;
 using Console = System.Console;
 using Math = System.Math;
 using GC = System.GC;
-using Array = System.Array;
+using IComparable = System.IComparable;
 
 namespace myList {
-    class myList<T> {
+    class myList<T> where T: IComparable {
         int num;
         int maxSize;
         T[] list;
@@ -30,7 +30,7 @@ namespace myList {
         public myList(int maxSize) {
             num = 0;
             this.maxSize = maxSize;
-            list = new T[maxSize];
+            this.list = new T[this.maxSize];
         }
 
         public myList() : this(8) {
@@ -142,27 +142,32 @@ namespace myList {
 
         //implement Sort() by using quick sort,
         public void sort() {
-            Array.Sort(list);
+            this.quickSort(ref list, 0, Length-1);
         }
 
-        //private void quickSort(ref T[] target,int left,int right) {
-        //    int pivot = (left + right) / 2;
-        //    int i = left;
-        //    int j = right;
+        private void quickSort(ref T[] target, int left, int right) {
+            if (left < right) {
+                var pivot = target[(left + right) / 2];
+                int i = left -1;
+                int j = right +1;
 
-        //    while (left<right) {
-        //        //if(target[i])
-        //    }
+                while (i < j) {
+                    do ++i; while (target[i].CompareTo(pivot) < 0);//pivot < target[i]
+                    do --j; while (target[j].CompareTo(pivot) > 0);//pivot > target[j]
+                    if (i < j) swap(ref target[i],ref target[j]);
 
-        //    quickSort(ref target, left, pivot - 1);
-        //    quickSort(ref target, pivot, right);
-        //}
+                }
 
-        //private void swap(ref T target1,ref T target2) {
-        //    var temp = target2;
-        //    target2 = target1;
-        //    target1 = temp;
-        //    GC.Collect();
-        //}
-    }
+                quickSort(ref target, left, i-1);
+                quickSort(ref target, j+1, right);
+            }
+        }
+
+        private void swap(ref T target1,ref T target2) {
+        var temp = target2;
+        target2 = target1;
+            target1 = temp;
+            GC.Collect();
+        }
+}
 }
